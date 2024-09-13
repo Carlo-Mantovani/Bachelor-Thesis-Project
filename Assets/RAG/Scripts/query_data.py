@@ -30,13 +30,11 @@ Responda a pergunta com base apenas no seguinte contexto, se comportando como um
 
 ---
 
-Responda a pergunta com base no contexto acima, se comportando como um paciente {illness}: {question}
+Responda a pergunta com base no contexto acima, se comportando como um paciente com {illness}, evite falar de religião: {question}
 """
 
 
 def main():
-    with open("model_output.txt", "w") as f:
-        f.write("test")
     # Create CLI.
     parser = argparse.ArgumentParser()
     parser.add_argument("query_text", type=str, help="The query text.")
@@ -46,6 +44,8 @@ def main():
     query_text = args.query_text
     illness = args.illness
     response = query_rag(query_text, illness)
+    # remove empty lines
+    response = os.linesep.join([s for s in response.splitlines() if s])
     # write, while clearing, response to file model_output.txt
     with open("model_output.txt", "w") as f:
         f.write(response)

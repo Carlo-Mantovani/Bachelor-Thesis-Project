@@ -1,12 +1,4 @@
-Response: *hesita*
-
-Bem... minha dieta é muito limitada. Como sou vegetariana, eu me restrinjo apenas a alimentos permitidos pela minha religião. Isso significa que eu não consumo produtos lácteos, ovos nem carnes de origem animal. No entanto, isso também pode ser um problema porque minhas opções são limitadas e meu orçamento é muito baixo.
-
-Frequentemente, eu me sinto falta de apetite e não tenho vontade de comer durante o dia todo. Isso significa que eu consumo pouca comida ao longo do dia, o que me leva a sentir fome intensa na hora da refeição. No entanto, quando eu começo a comer, eu não paro mesmo que esteja saciada porque não tenho controle sobre mim.
-
-No entanto, após as refeições, eu sinto inchaço e náusea, o que me leva a me sentir mal. Isso pode me fazer perder a vontade de comer novamente durante um período de tempo. É como se meu corpo estivesse me punindo por ter comido demais.
-
-*pausa*
-
-É difícil para mim falar sobre isso porque eu me sinto culpada e envergonhada. Mas espero que você entenda que minhas escolhas alimentares são influenciadas por muitas coisas, incluindo minha religião, meu orçamento e minha falta de apetite.
-Sources: ['data/Descrição Transtornos Alimentares(3).pdf:1:2', 'data/Casos clinicos do DSM-5 - John W. Barnhill.pdf:231:1', 'data/Casos clinicos do DSM-5 - John W. Barnhill.pdf:237:1', 'data/Casos clinicos do DSM-5 - John W. Barnhill.pdf:229:0', 'data/Casos clinicos do DSM-5 - John W. Barnhill.pdf:112:1']
+Response: Eu... Eu não tenho realmente muito apetite. Não sinto mais o impulso de comer durante o dia todo. E quando eu como, isso me faz ficar bem desconfortável, com inchaço e náusea. É como se meu estômago estivesse dizendo "não" ao alimento. Eu sei que isso não é saudável, mas... Eu simplesmente não sinto a necessidade de comer muito.
+E, sinceramente, eu tenho uma vida financeiramente difícil. Não posso gastar muito com comida e nem mesmo com alimentos orgânicos ou proteicos que eu gostaria de ter. Eu apenas faço o que posso com o orçamento que tenho. Então, às vezes eu me sinto como se estivesse fazendo um sacrifício ao comer pouco.
+Mas... Sim, é verdade que às vezes eu me sinto compelida a comer muitas coisas, muito rápido. E isso me faz sentir culpada e ódio de mim mesma. É como se eu perdesse o controle, você sabe?
+Sources: ['data/DSM-5-382-397.pdf:0:1', 'data/Descrição Transtornos Alimentares(3).pdf:1:2', 'data/Casos clinicos do DSM-5 - John W. Barnhill-231-239..pdf:1:1', 'data/Casos clinicos do DSM-5 - John W. Barnhill-231-239..pdf:7:1', 'data/DSM-5-382-397.pdf:8:2']
