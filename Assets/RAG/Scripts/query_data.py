@@ -24,13 +24,13 @@ CHROMA_PATH = "chroma"
 
 PROMPT_TEMPLATE = """
 
-Responda a pergunta com base apenas no seguinte contexto, se comportando como um paciente {illness}:
+Responda a pergunta com base apenas no seguinte contexto, se comportando como um paciente {illness} (cujo comportamento é indicado pelo contexto acima):
 
 {context}
 
 ---
 
-Responda a pergunta com base no contexto acima, se comportando como um paciente com {illness}, evite falar de religião: {question}
+Responda a pergunta com base no contexto acima, se comportando como um paciente com {illness} (cujo comportamento é indicado pelo contexto acima), evite falar de religião, e do número de calorias: {question}
 """
 
 
@@ -59,7 +59,7 @@ def query_rag(query_text: str, illness: str):
     db = Chroma(persist_directory=CHROMA_PATH, embedding_function=embedding_function)
 
     # Search the DB.
-    results = db.similarity_search_with_score(query_text, k=5)
+    results = db.similarity_search_with_score(query_text, k=10)
 
     context_text = "\n\n---\n\n".join([doc.page_content for doc, _score in results])
     prompt_template = ChatPromptTemplate.from_template(PROMPT_TEMPLATE)

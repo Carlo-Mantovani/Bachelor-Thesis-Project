@@ -8,8 +8,7 @@ from langchain.schema.document import Document
 from get_embedding_function import get_embedding_function
 from langchain.vectorstores.chroma import Chroma
 import warnings
-
-warnings.filterwarnings("ignore", category=DeprecationWarning, module="langchain.vectorstores")
+warnings.filterwarnings("ignore", category=DeprecationWarning) 
 
 
 
@@ -40,8 +39,8 @@ def load_documents():
 
 def split_documents(documents: list[Document]):
     text_splitter = RecursiveCharacterTextSplitter(
-        chunk_size=800,
-        chunk_overlap=80,
+        chunk_size=150,
+        chunk_overlap=15,
         length_function=len,
         is_separator_regex=False,
     )
