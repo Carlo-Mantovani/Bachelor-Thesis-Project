@@ -70,7 +70,7 @@ def query_rag(query_text: str, illness: str):
     response_text = model.invoke(prompt)
 
     sources = [doc.metadata.get("id", None) for doc, _score in results]
-    formatted_response = f"Response: {response_text}\nSources: {sources}"
+    formatted_response = f"{response_text}\nSources: {sources}"
     print(formatted_response)
     return formatted_response
 
