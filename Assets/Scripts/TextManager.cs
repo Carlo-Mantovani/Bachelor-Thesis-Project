@@ -4,11 +4,12 @@ using UnityEngine.UI;
 using System.Diagnostics;
 using UnityEngine.Events;
 using SFB;
+using TMPro;
 
 public class TextManager : MonoBehaviour
 {
     public InputField inputField;
-    public Text displayText;
+    public TextMeshProUGUI displayText;
     public Button submitButton;
     public Button uploadButton;
     public Button updateButton;
@@ -18,10 +19,6 @@ public class TextManager : MonoBehaviour
     private string responseFilePath;
     private string dataFolderPath;
 
-    // Font size settings
-    public int maxFontSize = 30; // Maximum font size
-    public int minFontSize = 10; // Minimum font size
-    public int maxTextLength = 500; // Length threshold for resizing font
 
     void Start()
     {
@@ -83,7 +80,6 @@ public class TextManager : MonoBehaviour
         {
             string content = File.ReadAllText(responseFilePath); // Read the content of the response file
             displayText.text = content; // Display the content in the text box
-            AdjustFontSize(content); // Adjust font size based on content length
         }
         else
         {
@@ -91,13 +87,6 @@ public class TextManager : MonoBehaviour
         }
     }
 
-    void AdjustFontSize(string content)
-    {
-        // Calculate the font size based on the length of the content
-        int textLength = content.Length;
-        int newFontSize = Mathf.Max(minFontSize, Mathf.Min(maxFontSize, maxFontSize - (textLength / maxTextLength) * (maxFontSize - minFontSize)));
-        displayText.fontSize = newFontSize; // Apply the calculated font size
-    }
 
     void RagQuery(string inputText, string selectedOption)
     {
