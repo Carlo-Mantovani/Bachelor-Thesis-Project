@@ -1,0 +1,16 @@
+version: '3.8'
+
+networks:
+  default:
+      name: rag-network
+
+services:
+  rag-inference:
+    build:
+      context: ./rag
+      dockerfile: Dockerfile
+    container_name: rag-inference
+    volumes:
+      - ./rag/outputs:/app/outputs
+    networks:
+      - default

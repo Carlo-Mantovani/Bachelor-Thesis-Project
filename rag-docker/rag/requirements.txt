@@ -1,0 +1,4 @@
+langchain
+langchain_community
+pypdf # or other PDF handling lib, depending on PyPDFDirectoryLoader requirements
+chromadb
