@@ -7,10 +7,11 @@ networks:
 services:
   rag-inference:
     build:
-      context: ./rag
+      context: ./
       dockerfile: Dockerfile
     container_name: rag-inference
     volumes:
-      - ./rag/outputs:/app/outputs
+      - ./outputs:/app/outputs
+      - ./data:/app/data
     networks:
       - default

@@ -1,14 +1,15 @@
 import argparse
 import os
 import shutil
-from langchain.document_loaders.pdf import PyPDFDirectoryLoader
-#from langchain_community.document_loaders.csv_loader import CSVLoader
+from langchain_community.document_loaders import PyPDFDirectoryLoader  # Updated import
 from langchain_text_splitters import RecursiveCharacterTextSplitter
-from langchain.schema.document import Document
+from langchain.schema import Document  # Updated import
 from get_embedding_function import get_embedding_function
-from langchain.vectorstores.chroma import Chroma
+from langchain_community.vectorstores import Chroma  # Updated import
 import warnings
-warnings.filterwarnings("ignore", category=DeprecationWarning) 
+
+# Ignore deprecation warnings
+warnings.filterwarnings("ignore", category=DeprecationWarning)
 
 
 

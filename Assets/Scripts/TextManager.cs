@@ -2,7 +2,7 @@ using System.IO;
 using UnityEngine;
 using UnityEngine.UI;
 using System.Diagnostics;
-using UnityEngine.Events;
+using System.Threading.Tasks;
 using SFB;
 using TMPro;
 
@@ -13,54 +13,74 @@ public class TextManager : MonoBehaviour
     public Button submitButton;
     public Button uploadButton;
     public Button updateButton;
-    public Dropdown optionDropdown; // Dropdown menu for options
+    public Dropdown optionDropdown;
 
-    private string pythonScriptPath;
+    private string containerName;
     private string responseFilePath;
     private string dataFolderPath;
-
+    private bool isProcessing = false; // Flag to track if a process is running
 
     void Start()
     {
-        // Paths to the Python script and response text file
-        pythonScriptPath = Application.dataPath + "/RAG/Scripts/query_data.py";
-        responseFilePath = Application.dataPath + "/RAG/Scripts/model_output.txt";
-        dataFolderPath = Application.dataPath + "/RAG/Scripts/data";
+        containerName = "rag-inference";
+        responseFilePath = Application.dataPath + "/rag-docker/outputs/model_output.txt";
+        dataFolderPath = Application.dataPath + "/rag-docker/data";
 
-        // Ensure the response file is deleted if it exists
         if (File.Exists(responseFilePath))
         {
             File.Delete(responseFilePath);
         }
 
-        // Set up the button listeners
-        submitButton.onClick.AddListener(OnSubmit);
+        submitButton.onClick.AddListener(() => _ = OnSubmit());
         uploadButton.onClick.AddListener(OnUploadDocument);
-        updateButton.onClick.AddListener(OnUpdateDatabase);
+        updateButton.onClick.AddListener(() => _ = OnUpdateDatabase());
 
-        // Initialize the text display
         UpdateText();
     }
 
-    void OnSubmit()
+    async Task OnSubmit()
     {
+        if (isProcessing) // Check if a process is already running
+        {
+            ShowWarning("A process is already running. Please wait for it to finish before starting a new one.");
+            return;
+        }
+
+        isProcessing = true; // Set the flag to indicate a process is running
+
         string inputText = inputField.text;
-        string selectedOption = optionDropdown.options[optionDropdown.value].text; // Get selected option text
+        string selectedOption = optionDropdown.options[optionDropdown.value].text;
 
-        // Run the Python script
-        RagQuery(inputText, selectedOption);
+        // Run the query in the background
+        await Task.Run(() => RagQuery(inputText, selectedOption));
 
-        // Update the text display after running the script
-        UpdateText();
+        // Periodically check for the response file and update text
+        await WaitForResponse();
+
+        isProcessing = false; // Reset the flag after the process is done
     }
 
+    async Task OnUpdateDatabase()
+    {
+        if (isProcessing) // Check if a process is already running
+        {
+            ShowWarning("A process is already running. Please wait for it to finish before starting a new one.");
+            return;
+        }
+
+        isProcessing = true; // Set the flag to indicate a process is running
+
+        await Task.Run(() => RunPythonScript("populate_database.py"));
+        
+        isProcessing = false; // Reset the flag after the process is done
+    }
     void OnUploadDocument()
     {
-        string filePath = OpenFileDialog(); // Open file explorer and get the path of the selected file
+        string filePath = OpenFileDialog();
         if (!string.IsNullOrEmpty(filePath) && Path.GetExtension(filePath).ToLower() == ".pdf")
         {
             string destinationPath = Path.Combine(dataFolderPath, Path.GetFileName(filePath));
-            File.Copy(filePath, destinationPath, true); // Copy the PDF file to the data folder
+            File.Copy(filePath, destinationPath, true);
             UnityEngine.Debug.Log("PDF uploaded successfully.");
         }
         else
@@ -69,81 +89,87 @@ public class TextManager : MonoBehaviour
         }
     }
 
-    void OnUpdateDatabase()
+    void ShowWarning(string message)
     {
-        RunPythonScript("populate_database.py"); // Run the Python script to update the database
+        // Display a warning message (You can use a pop-up dialog or a UI element in your scene)
+        UnityEngine.Debug.LogWarning(message);
+        // Optionally, you could implement a UI dialog for user feedback.
+    }
+
+    async Task WaitForResponse()
+    {
+        while (!File.Exists(responseFilePath))
+        {
+            await Task.Delay(500); // Check every half second
+        }
+        UpdateText();
     }
 
     void UpdateText()
     {
         if (File.Exists(responseFilePath))
         {
-            string content = File.ReadAllText(responseFilePath); // Read the content of the response file
-            displayText.text = content; // Display the content in the text box
+            string content = File.ReadAllText(responseFilePath);
+            displayText.text = content;
         }
         else
         {
-            displayText.text = "Aguardando Pergunta"; // Display a default message if file doesn't exist
+            displayText.text = "Aguardando Pergunta";
         }
     }
 
-
     void RagQuery(string inputText, string selectedOption)
     {
-        ProcessStartInfo start = new ProcessStartInfo();
-        start.WorkingDirectory = Application.dataPath + "/RAG/Scripts"; // Set the working directory
-        start.FileName = "python"; // Use "python" or full path to python.exe
-        start.Arguments = $"\"{pythonScriptPath}\" \"{inputText}\" \"--illness\" \"{selectedOption}\""; // Pass arguments to the Python script
-        start.UseShellExecute = false;
-        start.RedirectStandardOutput = true;
-        start.RedirectStandardError = true; // Also capture errors
+        ProcessStartInfo start = new ProcessStartInfo
+        {
+            FileName = "docker",
+            Arguments = $"exec {containerName} python /app/query_data.py \"{inputText}\" \"--illness\" \"{selectedOption}\"",
+            UseShellExecute = false,
+            RedirectStandardOutput = true,
+            RedirectStandardError = true
+        };
 
         using (Process process = Process.Start(start))
         {
-            using (StreamReader reader = process.StandardOutput)
-            {
-                string result = reader.ReadToEnd();
-                UnityEngine.Debug.Log(result); // Log the Python script's output (if any)
-            }
-            using (StreamReader errorReader = process.StandardError)
-            {
-                string error = errorReader.ReadToEnd();
-                if (!string.IsNullOrEmpty(error))
-                {
-                    UnityEngine.Debug.LogError("Python error: " + error); // Log any errors from the script
-                }
-            }
+            process.WaitForExit();
+            LogProcessOutput(process);
         }
     }
 
     void RunPythonScript(string scriptName)
     {
-        ProcessStartInfo start = new ProcessStartInfo();
-        start.WorkingDirectory = Application.dataPath + "/RAG/Scripts"; // Set the working directory
-        start.FileName = "python3"; // Use "python3" or full path to python3 executable
-        start.Arguments = scriptName; // Run the specified Python script
-        start.UseShellExecute = false;
-        start.RedirectStandardOutput = true;
-        start.RedirectStandardError = true; // Also capture errors
+        ProcessStartInfo start = new ProcessStartInfo
+        {
+            FileName = "docker",
+            Arguments = $"exec {containerName} python /app/{scriptName}",
+            UseShellExecute = false,
+            RedirectStandardOutput = true,
+            RedirectStandardError = true
+        };
 
         using (Process process = Process.Start(start))
         {
-            using (StreamReader reader = process.StandardOutput)
-            {
-                string result = reader.ReadToEnd();
-                UnityEngine.Debug.Log(result); // Log the Python script's output (if any)
-            }
-            using (StreamReader errorReader = process.StandardError)
-            {
-                string error = errorReader.ReadToEnd();
-                if (!string.IsNullOrEmpty(error))
-                {
-                    UnityEngine.Debug.LogError("Python error: " + error); // Log any errors from the script
-                }
-            }
+            process.WaitForExit();
+            LogProcessOutput(process);
         }
     }
 
+    void LogProcessOutput(Process process)
+    {
+        using (StreamReader reader = process.StandardOutput)
+        {
+            string result = reader.ReadToEnd();
+            UnityEngine.Debug.Log(result);
+        }
+        using (StreamReader errorReader = process.StandardError)
+        {
+            string error = errorReader.ReadToEnd();
+            if (!string.IsNullOrEmpty(error))
+            {
+                UnityEngine.Debug.LogError("Python error: " + error);
+            }
+        }
+    }
 
     string OpenFileDialog()
     {
@@ -153,10 +179,6 @@ public class TextManager : MonoBehaviour
         };
 
         var paths = StandaloneFileBrowser.OpenFilePanel("Select a file", "", extensions, false);
-        if (paths.Length > 0)
-        {
-            return paths[0]; // Return the first selected file path
-        }
-        return string.Empty;
+        return paths.Length > 0 ? paths[0] : string.Empty;
     }
 }
