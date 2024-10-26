@@ -8,12 +8,12 @@ using TMPro;
 
 public class TextManager : MonoBehaviour
 {
-    public InputField inputField;
+    public TMP_InputField inputField;
     public TextMeshProUGUI displayText;
     public Button submitButton;
     public Button uploadButton;
     public Button updateButton;
-    public Dropdown optionDropdown;
+    public TMP_Dropdown optionDropdown;
 
     private string containerName;
     private string responseFilePath;
