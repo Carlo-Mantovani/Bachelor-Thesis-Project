@@ -10,13 +10,17 @@ public class TextManager : MonoBehaviour
 {
     public TMP_InputField inputField;
     public TextMeshProUGUI displayText;
+    public TextMeshProUGUI loadingText;
     public Button submitButton;
     public Button uploadButton;
     public Button updateButton;
     public TMP_Dropdown optionDropdown;
+    public UMAMoodSlider moodSlider;
+
 
     private string containerName;
     private string responseFilePath;
+    private string moodFilePath;
     private string dataFolderPath;
     private bool isProcessing = false; // Flag to track if a process is running
 
@@ -24,7 +28,9 @@ public class TextManager : MonoBehaviour
     {
         containerName = "rag-inference";
         responseFilePath = Application.dataPath + "/rag-docker/outputs/model_output.txt";
+        moodFilePath = Application.dataPath + "/rag-docker/outputs/mood_output.txt";
         dataFolderPath = Application.dataPath + "/rag-docker/data";
+        loadingText.text = "";
 
         if (File.Exists(responseFilePath))
         {
@@ -47,6 +53,7 @@ public class TextManager : MonoBehaviour
         }
 
         isProcessing = true; // Set the flag to indicate a process is running
+        loadingText.text = "Carregando...";
 
         string inputText = inputField.text;
         string selectedOption = optionDropdown.options[optionDropdown.value].text;
@@ -58,6 +65,7 @@ public class TextManager : MonoBehaviour
         await WaitForResponse();
 
         isProcessing = false; // Reset the flag after the process is done
+        loadingText.text = "";
     }
 
     async Task OnUpdateDatabase()
@@ -69,10 +77,12 @@ public class TextManager : MonoBehaviour
         }
 
         isProcessing = true; // Set the flag to indicate a process is running
+        loadingText.text = "Carregando...";
 
         await Task.Run(() => RunPythonScript("populate_database.py"));
         
         isProcessing = false; // Reset the flag after the process is done
+        loadingText.text = "";
     }
     void OnUploadDocument()
     {
@@ -109,14 +119,36 @@ public class TextManager : MonoBehaviour
     {
         if (File.Exists(responseFilePath))
         {
-            string content = File.ReadAllText(responseFilePath);
-            displayText.text = content;
+            string responseContent = File.ReadAllText(responseFilePath);
+            displayText.text = responseContent;
+
+            string moodContent = File.ReadAllText(moodFilePath);
+            // Parse the emotion from the content
+            int moodValue = ParseMood(moodContent);
+
+            // Set the mood on the avatar through the referenced UMAMoodSlider
+            if (moodSlider != null)
+            {
+                moodSlider.SetMood(moodValue);
+            }
         }
         else
         {
             displayText.text = "Aguardando Pergunta";
         }
     }
+
+
+    int ParseMood(string content)
+    {
+        if (content.Contains("Neutro")) return 0;
+        else if (content.Contains("Feliz") || content.Contains("Felicidade")) return 1;
+        else if (content.Contains("Triste") || content.Contains("Tristeza")) return 2;
+        else if (content.Contains("Raiva")) return 3;
+        else if (content.Contains("Surpreso") || content.Contains("Surpresa")) return 4;
+        return 0; // Default to Neutral
+    }
+
 
     void RagQuery(string inputText, string selectedOption)
     {

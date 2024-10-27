@@ -11,27 +11,28 @@ warnings.filterwarnings("ignore", category=DeprecationWarning)
 
 CHROMA_PATH = "chroma"
 
-#PROMPT_TEMPLATE = """
-#
-#Responda a pergunta com base apenas no seguinte contexto, se comportando como um paciente com Anorexia Nervosa:
-#
-#{context}
-#
-#---
-#
-#Responda a pergunta com base contexto acima, se comportando comom um paciente com Anorexia Nervosa: {question}
-#"""
 
 PROMPT_TEMPLATE = """
+Responda à pergunta com base apenas no seguinte contexto, se comportando como um paciente {illness} masculino (use palavras masculinas quando necessário) (cujo comportamento é indicado pelo contexto abaixo). Responda seguindo o formato:
 
-Responda a pergunta com base apenas no seguinte contexto, se comportando como um paciente {illness} (cujo comportamento é indicado pelo contexto abaixo):
+
+[Emoção]
+
+Resposta à pergunta
+
+
+As emoções possíveis são: [Neutro, Felicidade, Tristeza, Raiva, Surpresa], escolha a que melhor se encaixa na sua resposta.
+
+---
 
 {context}
 
 ---
+Novamente as emoções possíveis são: [Neutro, Felicidade, Tristeza, Raiva, Surpresa], escolha a que melhor se encaixa na sua resposta.
 
-Responda a pergunta com base no contexto acima, se comportando como um paciente com {illness} (cujo comportamento é indicado pelo contexto acima), evite falar de religião, e do número de calorias: {question}
+Responda à pergunta com base no contexto acima, se comportando como um paciente com {illness} (cujo comportamento é indicado pelo contexto acima), evite falar de religião e do número de calorias, seja realista e ambíguo, não dê respostas muito detalhadas: {question}
 """
+
 
 
 def main():
@@ -46,12 +47,28 @@ def main():
     response = query_rag(query_text, illness)
     # remove empty lines
     response = os.linesep.join([s for s in response.splitlines() if s])
-    # write, while clearing, response to file model_output.txt
+    mood, text = separate_text(response)
+    
+    # write, while clearing, response text to file model_output.txt
     with open("./outputs/model_output.txt", "w") as f:
-        f.write(response)
+        f.write(text)
+    # write, while clearing, emotion to file mood_output.txt
+    with open("./outputs/mood_output.txt", "w") as f:
+        f.write(mood)
 
 
-
+# Function to separate the response text from the emotion
+def separate_text(response):
+    mood = response.split("\n")[0]
+    # Remove brackets from emotion if they exist
+    if mood[0] == "[":
+        mood = mood[1:-1]
+    text = "\n".join(response.split("\n")[1:])
+    # remove empty lines
+    text = os.linesep.join([s for s in text.splitlines() if s])
+    return mood, text
+    
+    
 
 def query_rag(query_text: str, illness: str):
     # Prepare the DB.
@@ -66,11 +83,17 @@ def query_rag(query_text: str, illness: str):
     prompt = prompt_template.format(context=context_text, question=query_text, illness=illness)
     # print(prompt)
 
-    model = Ollama(model="llama3")
+   # Initialize the Ollama model with customized parameters for randomness
+    model = Ollama(
+        model="llama3", # The model to use.
+        temperature=1.0,  # Lower temperature means less randomness.
+    )
+
     response_text = model.invoke(prompt)
 
     sources = [doc.metadata.get("id", None) for doc, _score in results]
-    formatted_response = f"{response_text}\nSources: {sources}"
+    #formatted_response = f"{response_text}\nSources: {sources}"
+    formatted_response = f"{response_text}"
     print(formatted_response)
     return formatted_response
 
