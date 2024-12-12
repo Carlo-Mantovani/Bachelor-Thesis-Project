@@ -47,7 +47,7 @@ public class UMAMoodSlider : MonoBehaviour
             float delta = 10 * Time.deltaTime;
             switch (mood)
             {
-                case 0:
+                case 0: // Neutral
                     expression.leftMouthSmile_Frown = Mathf.Lerp(expression.leftMouthSmile_Frown, 0, delta);
                     expression.rightMouthSmile_Frown = Mathf.Lerp(expression.rightMouthSmile_Frown, 0, delta);
                     expression.midBrowUp_Down = Mathf.Lerp(expression.midBrowUp_Down, 0, delta);
@@ -63,7 +63,7 @@ public class UMAMoodSlider : MonoBehaviour
                     expression.leftEyeOpen_Close = Mathf.Lerp(expression.leftEyeOpen_Close, 0, delta);
                     expression.rightEyeOpen_Close = Mathf.Lerp(expression.rightEyeOpen_Close, 0, delta);
                     break;
-                case 1:
+                case 1: // Happiness
                     expression.leftMouthSmile_Frown = Mathf.Lerp(expression.leftMouthSmile_Frown, 0.7f, delta);
                     expression.rightMouthSmile_Frown = Mathf.Lerp(expression.rightMouthSmile_Frown, 0.7f, delta);
                     expression.midBrowUp_Down = Mathf.Lerp(expression.midBrowUp_Down, -0.7f, delta);
@@ -79,7 +79,7 @@ public class UMAMoodSlider : MonoBehaviour
                     expression.leftEyeOpen_Close = Mathf.Lerp(expression.leftEyeOpen_Close, -0.2f, delta);
                     expression.rightEyeOpen_Close = Mathf.Lerp(expression.rightEyeOpen_Close, -0.2f, delta);
                     break;
-                case 2:
+                case 2: // Sadness
                     expression.leftMouthSmile_Frown = Mathf.Lerp(expression.leftMouthSmile_Frown, -0.8f, delta);
                     expression.rightMouthSmile_Frown = Mathf.Lerp(expression.rightMouthSmile_Frown, -0.8f, delta);
                     expression.midBrowUp_Down = Mathf.Lerp(expression.midBrowUp_Down, 0.7f, delta);
@@ -95,7 +95,7 @@ public class UMAMoodSlider : MonoBehaviour
                     expression.leftEyeOpen_Close = Mathf.Lerp(expression.leftEyeOpen_Close, 0.5f, delta);
                     expression.rightEyeOpen_Close = Mathf.Lerp(expression.rightEyeOpen_Close, 0.5f, delta);
                     break;
-                case 3:
+                case 3: // Anger
                     expression.leftMouthSmile_Frown = Mathf.Lerp(expression.leftMouthSmile_Frown, -0.3f, delta);
                     expression.rightMouthSmile_Frown = Mathf.Lerp(expression.rightMouthSmile_Frown, -0.3f, delta);
                     expression.midBrowUp_Down = Mathf.Lerp(expression.midBrowUp_Down, -1f, delta);
@@ -111,7 +111,7 @@ public class UMAMoodSlider : MonoBehaviour
                     expression.leftEyeOpen_Close = Mathf.Lerp(expression.leftEyeOpen_Close, -0.2f, delta);
                     expression.rightEyeOpen_Close = Mathf.Lerp(expression.rightEyeOpen_Close, -0.2f, delta);
                     break;
-                case 4:
+                case 4: // Surprise
                     expression.leftMouthSmile_Frown = Mathf.Lerp(expression.leftMouthSmile_Frown, 0f, delta);
                     expression.rightMouthSmile_Frown = Mathf.Lerp(expression.rightMouthSmile_Frown, 0f, delta);
                     expression.midBrowUp_Down = Mathf.Lerp(expression.midBrowUp_Down, 1f, delta);

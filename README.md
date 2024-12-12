@@ -5,7 +5,7 @@
 
 # Dependencies
 - Docker
-- Docker compose
+- Docker Compose
 - Unity, if running from editor
 
 # Run
@@ -27,11 +27,18 @@ docker compose up --build
 - Before executing the application
 - From root directory, cd to data directory from build
 ```
-cd Builds/Build_Dir/Avatar-Chatbot_Data/rag-docker
+cd Build_Dir/Avatar-Chatbot_Data/rag-docker
 ```
 - Start the RAG Infrastructure container
 ```
 docker compose up --build
 ```
 - NOTE: you may need to use docker-compose command instead
+
+## NOTES
+- When creating the database, ollama, llama3 and the preliminary database will be setup. This process can take a significant amount of time of up to 20min+ on lower end machines.
+- Inference may also take a significant amount of time if ran on a CPU (1min+) rather than a GPU (10s+)
+
+# Example Build
+- 
 
