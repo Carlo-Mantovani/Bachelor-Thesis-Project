@@ -77,10 +77,12 @@ def query_rag(query_text: str, illness: str):
     embedding_function = get_embedding_function()
     db = Chroma(persist_directory=CHROMA_PATH, embedding_function=embedding_function)
 
-    to_search = f'{query_text}: {illness}'
+    # Text to be embedded and searched in the document DB.
+    to_search = f'{illness}: {query_text}'
     # Search the DB.
     results = db.similarity_search_with_score(to_search, k=10)
 
+    # Include the context in the prompt.
     context_text = "\n\n---\n\n".join([doc.page_content for doc, _score in results])
     prompt_template = ChatPromptTemplate.from_template(PROMPT_TEMPLATE)
     prompt = prompt_template.format(context=context_text, question=query_text, illness=illness)
@@ -91,7 +93,7 @@ def query_rag(query_text: str, illness: str):
         model="llama3", # The model to use.
         temperature=1.0,  # Lower temperature means less randomness.
     )
-
+    # Invoke the model with the prompt.
     response_text = model.invoke(prompt)
 
     sources = [doc.metadata.get("id", None) for doc, _score in results]
